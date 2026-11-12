@@ -1,0 +1,24 @@
+# зависимости (восстанавливаются командой npm install)
+node_modules
+
+# сборка (генерируется автоматически)
+dist
+
+# служебные временные папки
+.tmp
+.tmp2
+.edge-profile
+.measure
+.npm-cache
+.vercel
+.netlify
+
+# локальные утилиты для измерений
+measure.html
+measure.mjs
+edge-out.txt
+edge-err.txt
+
+# секреты и окружение
+.env
+.env.*

@@ -10,18 +10,19 @@ type Project = {
   text: string;
   tags: string[];
   result: string;
-  mock: "landing" | "bot" | "analytics";
-  /** Ссылка на живой проект или кейс — если есть, стрелка на карточке станет ссылкой. */
+  mock: "audio" | "bot" | "analytics";
+  /** Ссылка на живой сайт — если есть, карточка открывает её вместо внутреннего демо. */
   link?: string;
 };
 
 const projects: Project[] = [
   {
-    title: "Лендинг для SaaS",
-    text: "Промо-страница с интерактивными блоками и калькулятором тарифов.",
-    tags: ["React", "Tailwind", "Motion"],
-    result: "Адаптив · анимации · быстрая загрузка",
-    mock: "landing",
+    title: "Лендинг звукорежиссёра",
+    text: "Персональный сайт-резюме: запись, сведение, мастеринг и звук для мероприятий.",
+    tags: ["HTML", "CSS", "JavaScript"],
+    result: "Живой сайт · аудиоплеер · галерея",
+    mock: "audio",
+    link: "https://serhio1703.github.io/kashperovvPortfolio/",
   },
   {
     title: "Telegram-бот приёма заказов",
@@ -39,29 +40,47 @@ const projects: Project[] = [
   },
 ];
 
-function LandingMock() {
+function AudioMock() {
+  const bars = [0.5, 0.85, 0.6, 1, 0.7, 0.95, 0.55, 0.8, 0.65, 1, 0.6, 0.9, 0.5, 0.75, 0.6, 0.85, 0.45, 0.7, 0.55, 0.9];
   return (
     <div className="flex h-full flex-col gap-3 rounded-xl border border-white/10 bg-[#0a0d14] p-4">
       <div className="flex items-center justify-between">
-        <span className="size-2.5 rounded-full bg-gradient-to-br from-emerald-400 to-cyan-400" />
+        <span className="size-2.5 rounded-full bg-gradient-to-br from-amber-300 to-orange-400" />
         <div className="flex gap-1.5">
-          <span className="h-1 w-6 rounded bg-white/15" />
-          <span className="h-1 w-6 rounded bg-white/15" />
-          <span className="h-1 w-6 rounded bg-white/15" />
+          <span className="h-1 w-5 rounded bg-white/15" />
+          <span className="h-1 w-5 rounded bg-white/15" />
         </div>
       </div>
-      <div className="mt-2 h-2.5 w-4/5 rounded bg-white/20" />
-      <div className="h-2.5 w-3/5 rounded bg-white/10" />
-      <div className="mt-2 flex gap-2">
-        <div className="h-5 w-16 rounded-full bg-gradient-to-r from-emerald-400 to-cyan-400" />
-        <div className="h-5 w-14 rounded-full border border-white/15" />
-      </div>
-      <div className="mt-auto grid grid-cols-3 gap-2">
-        <div className="h-11 rounded-lg bg-white/5" />
-        <div className="grid h-11 place-items-center rounded-lg bg-emerald-400/15 ring-1 ring-emerald-400/20">
-          <span className="size-3 rounded-full bg-emerald-400/70" />
+      <div className="mt-1 h-2.5 w-3/4 rounded bg-white/20" />
+      <div className="h-2 w-1/2 rounded bg-white/10" />
+      <div className="mt-1 flex items-center gap-3">
+        <span className="grid size-9 shrink-0 place-items-center rounded-full bg-gradient-to-br from-amber-300 to-orange-400 text-[#1a1206]">
+          <svg viewBox="0 0 24 24" fill="currentColor" className="size-3.5" aria-hidden>
+            <path d="M8 5v14l11-7z" />
+          </svg>
+        </span>
+        <div className="flex h-8 flex-1 items-center gap-[2px]">
+          {bars.map((h, i) => (
+            <motion.span
+              key={i}
+              initial={{ scaleY: 0.2 }}
+              whileInView={{ scaleY: h }}
+              viewport={{ once: true, margin: "-40px" }}
+              transition={{ type: "spring", bounce: 0.3, duration: 0.8, delay: 0.1 + i * 0.03 }}
+              style={{ originY: 0.5 }}
+              className={cn(
+                "flex-1 rounded-full",
+                i % 4 === 2 ? "bg-amber-300/90" : "bg-white/20"
+              )}
+            />
+          ))}
         </div>
-        <div className="h-11 rounded-lg bg-white/5" />
+      </div>
+      <div className="mt-auto grid grid-cols-4 gap-1.5">
+        <div className="aspect-square rounded-md bg-gradient-to-br from-white/10 to-white/[0.03]" />
+        <div className="aspect-square rounded-md bg-gradient-to-br from-amber-300/30 to-orange-400/20" />
+        <div className="aspect-square rounded-md bg-gradient-to-br from-white/10 to-white/[0.03]" />
+        <div className="aspect-square rounded-md bg-gradient-to-br from-amber-300/20 to-orange-400/15" />
       </div>
     </div>
   );
@@ -157,8 +176,10 @@ export function Projects() {
                 <article className="glass group relative flex h-full flex-col overflow-hidden rounded-3xl transition-colors duration-300 hover:border-white/20">
                   <div className="relative m-3 mb-0">
                     <a
-                      href={"#/demo/" + p.mock}
-                      aria-label={"Открыть демо: " + p.title}
+                      href={p.link ?? "#/demo/" + p.mock}
+                      target={p.link ? "_blank" : undefined}
+                      rel={p.link ? "noreferrer" : undefined}
+                      aria-label={(p.link ? "Открыть сайт: " : "Открыть демо: ") + p.title}
                       className="group/mock relative block aspect-[4/3] overflow-hidden rounded-2xl border border-white/10 bg-[#08090f]"
                     >
                       <motion.div
@@ -166,13 +187,13 @@ export function Projects() {
                         transition={spring}
                         className="absolute inset-0 p-3"
                       >
-                        {p.mock === "landing" && <LandingMock />}
+                        {p.mock === "audio" && <AudioMock />}
                         {p.mock === "bot" && <BotMock />}
                         {p.mock === "analytics" && <AnalyticsMock />}
                       </motion.div>
                       <span className="pointer-events-none absolute inset-0 flex items-center justify-center bg-[#05060a]/0 transition-colors duration-300 group-hover/mock:bg-[#05060a]/40">
                         <span className="inline-flex translate-y-2 items-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-semibold text-neutral-900 opacity-0 shadow-xl transition-all duration-300 group-hover/mock:translate-y-0 group-hover/mock:opacity-100">
-                          Открыть демо
+                          {p.link ? "Открыть сайт" : "Открыть демо"}
                           <svg
                             viewBox="0 0 24 24"
                             fill="none"
@@ -188,28 +209,6 @@ export function Projects() {
                         </span>
                       </span>
                     </a>
-                    {p.link && (
-                      <a
-                        href={p.link}
-                        target="_blank"
-                        rel="noreferrer"
-                        aria-label={"Живой сайт: " + p.title}
-                        className="absolute left-3 top-3 grid size-8 place-items-center rounded-full border border-white/10 bg-[#05060a]/70 text-neutral-300 backdrop-blur-md transition-colors duration-200 hover:border-emerald-400/40 hover:text-emerald-300"
-                      >
-                        <svg
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          className="size-3.5"
-                          aria-hidden
-                        >
-                          <path d="M7 17L17 7M9 7h8v8" />
-                        </svg>
-                      </a>
-                    )}
                   </div>
                   <div className="flex flex-1 flex-col p-5 pt-4">
                     <h3 className="font-display text-base font-semibold text-white">
@@ -245,10 +244,12 @@ export function Projects() {
                         {p.result}
                       </p>
                       <a
-                        href={"#/demo/" + p.mock}
+                        href={p.link ?? "#/demo/" + p.mock}
+                        target={p.link ? "_blank" : undefined}
+                        rel={p.link ? "noreferrer" : undefined}
                         className="mt-3 flex w-full items-center justify-center gap-2 rounded-full border border-white/15 bg-white/[0.04] px-4 py-2.5 text-xs font-semibold text-white transition-colors duration-200 hover:border-emerald-400/50 hover:bg-emerald-400/10 hover:text-emerald-200"
                       >
-                        Смотреть демо
+                        {p.link ? "Открыть сайт" : "Смотреть демо"}
                         <svg
                           viewBox="0 0 24 24"
                           fill="none"
